@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('age');
             $table->text('body');
             $table->string('music');
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

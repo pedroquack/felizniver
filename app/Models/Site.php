@@ -15,6 +15,7 @@ class Site extends Model
         'age',
         'body',
         'music',
+        'status'
     ];
 
     public function images(): HasMany

@@ -6,11 +6,11 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
-            publicDirectory: 'public_html',
+            publicDirectory: 'public',
         }),
 
     ],
     build: {
-        outDir: "public_html/build",
+        outDir: "public/build",
       },
 });
