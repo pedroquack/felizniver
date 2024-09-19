@@ -29,8 +29,8 @@ class StripeController extends Controller
             'name' => 'required|max:255',
             'age' => 'required|integer|gt:0',
             'body' => 'required',
-            'music' => 'required',
-            'images' => 'required',
+            'music' => ['required','url','regex:/^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/'],
+            'images' => 'required|array|max:5',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg',
         ]);
 
