@@ -8,6 +8,7 @@
     Crie uma página para surpreender o aniversáriante, com uma apresentação de imagens, uma mensagem de aniversário e uma
     música de sua escolha + um QR code para compartilhar a pagina!
 </p>
+<div class="bg-yellow-300 p-1 rounded-lg shadow-lg my-3 text-center font-bold border-4 border-white border-dashed">Por apenas R$9.99</div>
 <form action="{{ route('stripe.checkout') }}" method="post" enctype="multipart/form-data">
     <div class="flex flex-col mb-3">
         <label for="name" class="text-white font-semibold">Nome do aniversáriante</label>

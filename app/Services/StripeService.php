@@ -20,7 +20,7 @@ class StripeService
                 'product_data' => [
                     'name' => 'Site para '.$name,
                 ],
-                'unit_amount' => 14.99*100,
+                'unit_amount' => 9.99*100,
                 ],
                 'quantity' => 1,
             ]],
