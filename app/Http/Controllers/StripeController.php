@@ -104,9 +104,14 @@ class StripeController extends Controller
 
     public function created(Request $request){
         $sessionId = $request->query('session_id');
-        // Recuperar o checkout session do Stripe
+        if(!isset($sessionId)){
+            abort(403);
+        }
         $session = $this->stripeService->retrieveSession($sessionId);
         // Obter informações do pagamento
+        if(!isset($session)){
+            abort(403);
+        }
         $email = $session->customer_details->email;
         return view('site.created',compact('email'));
     }
