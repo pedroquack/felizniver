@@ -12,7 +12,7 @@ class StripeService
         $this->stripe = new StripeClient(config('stripe.secret_key'));
     }
 
-    public function createCheckoutSession($name,$age,$body,$music,$images_ids){
+    public function createCheckoutSession($name,$age,$message_id,$video_id,$images_ids){
         return $this->stripe->checkout->sessions->create([
             'line_items' => [[
                 'price_data' => [
@@ -25,15 +25,19 @@ class StripeService
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => route('site.show',[$name,$age,$images_ids[0]]),
+            'success_url' => route('site.created').'?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => 'http://localhost/',
             'metadata' => [
                 'name' => $name,
                 'age' => $age,
-                'body' => $body,
-                'music' => $music,
+                'body' => $message_id,
+                'music' => $video_id,
                 'images_ids' => json_encode($images_ids)
             ],
         ]);
+    }
+
+    public function retrieveSession($session_id){
+        return $this->stripe->checkout->sessions->retrieve($session_id);
     }
 }

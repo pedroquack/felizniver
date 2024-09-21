@@ -4,6 +4,10 @@
 /public/hot
 /public/storage
 /public/files
+/public_html/build
+/public_html/hot
+/public_html/storage
+/public_html/files
 /storage/*.key
 /vendor
 .env

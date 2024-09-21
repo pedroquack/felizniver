@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Site extends Model
@@ -13,7 +14,7 @@ class Site extends Model
     protected $fillable = [
         'name',
         'age',
-        'body',
+        'message_id',
         'music',
         'status'
     ];
@@ -21,5 +22,10 @@ class Site extends Model
     public function images(): HasMany
     {
         return $this->hasMany(Image::class);
+    }
+
+    public function message(): BelongsTo
+    {
+        return $this->belongsTo(Message::class);
     }
 }

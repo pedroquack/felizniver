@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SuccessMail;
 use App\Models\Image;
+use App\Models\Message;
 use App\Models\Site;
 use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\Webhook;
 
 class StripeController extends Controller
 {
 
-    protected $temp_path = "/temp/";
     protected StripeService $stripeService;
 
     public function __construct(StripeService $stripeService)
@@ -34,7 +37,12 @@ class StripeController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg',
         ]);
 
+        preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $request->music, $match);
+
         $images_ids = [];
+        $message = Message::create([
+            'body' => $request->body,
+        ]);
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -45,9 +53,7 @@ class StripeController extends Controller
                 $images_ids[] = $image->id;
             }
         }
-
-        $response = $this->stripeService->createCheckoutSession($request->name,$request->age,$request->body,$request->music, $images_ids);
-
+        $response = $this->stripeService->createCheckoutSession($request->name,$request->age,$message->id,$match[1], $images_ids);
         return redirect($response->url);
     }
 
@@ -68,7 +74,7 @@ class StripeController extends Controller
             $site = Site::create([
                 'name' => $metadata->name,
                 'age' => $metadata->age,
-                'body' => $metadata->body,
+                'message_id' => $metadata->body,
                 'music' => $metadata->music,
                 'status' => true,
             ]);
@@ -80,6 +86,8 @@ class StripeController extends Controller
                 $image->site_id = $site->id;
                 $image->save();
             }
+            $qr_code = QrCode::size(150)->generate(route('site.show', [$site->id, $site->name]));
+            Mail::to($session->customer_details->email)->queue(new SuccessMail($site,$qr_code));
         }
 
         if($event->type === 'checkout.session.expired' || $event->type === 'payment_intent.payment_failed'){
@@ -94,7 +102,12 @@ class StripeController extends Controller
         return response()->json(['status' => 'Success'], 200);
     }
 
-    public function cancel(){
-
+    public function created(Request $request){
+        $sessionId = $request->query('session_id');
+        // Recuperar o checkout session do Stripe
+        $session = $this->stripeService->retrieveSession($sessionId);
+        // Obter informações do pagamento
+        $email = $session->customer_details->email;
+        return view('site.created',compact('email'));
     }
 }

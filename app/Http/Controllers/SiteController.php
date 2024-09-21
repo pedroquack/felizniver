@@ -13,12 +13,12 @@ class SiteController extends Controller
         return view('site.create');
     }
 
-    public function show($name,$age,$image_id){
-        $site = Site::where('name',$name)->where('age',$age)->first();
-        $image = Image::where('id',$image_id)->first();
-        if(!isset($site) || !isset($image)){
+    public function show($id,$name){
+        $site = Site::where('name',$name)->where('id',$id)->first();
+        if(!isset($site)){
             return abort(404);
         }
         return view('site.show', compact('site'));
     }
+
 }
