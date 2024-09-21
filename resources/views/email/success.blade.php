@@ -3,6 +3,7 @@
 <head>
     <style>
         .site-url{
+            margin: auto;
             padding: 4px;
             width: 50%;
             text-align: center;
